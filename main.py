@@ -8,7 +8,7 @@ import datetime
 class FaceAttendance:
     def __init__(self):
         self.confidence_threshold = 0.5
-        self.video_path = 0
+        self.video_path = "barca.mp4"
         self.faces_folder = "./FACES"
         self.video = cv2.VideoCapture(self.video_path)
         
@@ -67,7 +67,7 @@ class FaceAttendance:
         while True:
             ret, frame = video.read()
             frame = cv2.flip(frame, 1)
-            frame = self.resize(frame, 1.3)
+            frame = self.resize(frame, 0.4)
             faces_in_frame = face_recognition.face_locations(frame)
             encode_faces_in_frame = face_recognition.face_encodings(frame, faces_in_frame)
 
