@@ -8,7 +8,7 @@ class FaceAttendance:
     def __init__(self):
         self.confidence_threshold = 0.5
         self.video_path = 0
-        self.faces_folder = "FACES"
+        self.faces_folder = "./FACES"
         self.video = cv2.VideoCapture(self.video_path)
         
     def resize(self, frame, scale):
@@ -33,10 +33,10 @@ class FaceAttendance:
         face_images = []
 
         for face in faces_folder:
-            current_face = cv2.imread(f"{self.faces_folder/{face}}")
+            current_face = cv2.imread(f"{self.faces_folder}/{face}")
             if current_face is not None:
                 face_images.append(current_face)
-                face_names.append(os.path.splitext(face[0]))
+                face_names.append(os.path.splitext(face)[0])
 
         return face_names, face_images
 
@@ -63,6 +63,7 @@ class FaceAttendance:
                     if matches[match_index] and min(face_distance) < self.confidence_threshold:
                         name = face_names[match_index].upper()
                         y1, x2, y2, x1 = face_location
+                        cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 3)
                         cvzone.putTextRect(frame, f"{name}", (x1, y1 - 5), 1, 2, colorT=(0, 0, 0), offset=3)
 
                         recognized_face = self.resize(face_images[match_index], 0.2)
@@ -83,3 +84,7 @@ class FaceAttendance:
 
         video.release()
         cv2.destroyAllWindows()
+
+if __name__ == "__main__":
+    face_attendance = FaceAttendance()
+    face_attendance.run()
