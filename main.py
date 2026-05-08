@@ -3,6 +3,7 @@ import cvzone
 import face_recognition
 import os
 import numpy as np
+import datetime
 
 class FaceAttendance:
     def __init__(self):
@@ -40,6 +41,24 @@ class FaceAttendance:
 
         return face_names, face_images
 
+    def mark_attendance(self, name):
+        #create a csv file if it doesn't exist
+        if not os.path.exists("attendance.csv"):
+            with open("attendance.csv", "w") as file:
+                file.write("name,time")
+        
+        with open("attendance.csv", "r+") as file:
+            mydatalist = file.readlines()
+            namelist = []
+            for line in mydatalist:
+                entry = line.split(",")
+                namelist.append(entry[0])
+            if name not in namelist:
+                now = datetime.datetime.now()
+                timestring = now.strftime("%H:%M:%S")
+                file.writelines(f"\n{name},{timestring}")
+                print(f"Attendance marked for {name} at {timestring}")
+
     def run(self):
         face_names, face_images = self.load_faces_and_names()
         face_encodings = self.find_face_encodings(face_images)
@@ -65,6 +84,7 @@ class FaceAttendance:
                         y1, x2, y2, x1 = face_location
                         cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 3)
                         cvzone.putTextRect(frame, f"{name}", (x1, y1 - 5), 1, 2, colorT=(0, 0, 0), offset=3)
+                        self.mark_attendance(name)
 
                         recognized_face = self.resize(face_images[match_index], 0.2)
                         recognized_faces.append(recognized_face)
